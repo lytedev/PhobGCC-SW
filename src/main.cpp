@@ -5,13 +5,19 @@
 #include "pico/bootrom.h"
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
+#include "variables.h"
 
 volatile bool _videoOut = false;
+
 // Variables used by PhobVision to communicate with the event loop core
 volatile bool _sync = false;
 volatile uint8_t _pleaseCommit = 0; // 255 = redraw please
 int _currentCalStep = -1;           //-1 means not calibrating
 DataCapture _dataCapture;
+
+static bool multishine = false;
+static uint8_t multishineSeq = 0;
+static uint32_t multishineTimer = 0;
 
 // This gets called by the comms library
 GCReport __no_inline_not_in_flash_func(buttonsToGCReport)() {
@@ -37,6 +43,8 @@ GCReport __no_inline_not_in_flash_func(buttonsToGCReport)() {
                      .analogR = _btn.Ra};
   return report;
 }
+
+const uint32_t MICROSECONDS_PER_FRAME = (1.0 / 60.0) * 1000000.0;
 
 void second_core() {
 
@@ -762,8 +770,66 @@ void second_core() {
       running = true;
     }
 
+    if (multishine) {
+      // this code is derived from `readSticks` and is focused more on _frames_
+      // than the 1KHz polling rate of GCC adapters, which can of course
+      // introduce inconsistencies
+
+      // for multishine spam, we want to provide precisely the following inputs
+      // at precisely these timings: NOTE: I have this setup for FALCO and
+      // timings are slightly different for FOX frame 1: Down+B frame 2: nothing
+      // (shine lag) frame 3: nothing (shine lag) frame 4: jump out of shine (Y)
+      // frame 5: nothing (jumpsquat)
+      // frame 6: nothing (jumpsquat)
+      // frame 7: nothing (jumpsquat)
+      // frame 8: nothing (jumpsquat)
+      // frame 9: goto frame 1
+
+      // TODO: address 32bit overflow after ~72 mins of controller runtime
+      while (micros() - multishineTimer < MICROSECONDS_PER_FRAME) {
+      }
+      multishineTimer += MICROSECONDS_PER_FRAME;
+
+      readButtons(_pinList, _hardware);
+      Buttons tempBtn;
+      copyButtons(_hardware, tempBtn);
+
+      // check that we're still multishining (any of them may still be down)
+      const bool nowMultishining = tempBtn.Dr;
+      if (!nowMultishining) {
+        multishine = false;
+      } else {
+        // ensure that our multishine inputs are not triggered
+        tempBtn.Dr = 0;
+      }
+
+      // hold down
+      _btn.Ax = 127;
+      _btn.Ay = 20;
+      _raw.axUnfiltered = 0;
+      _raw.ayUnfiltered = -125;
+      if (multishineSeq == 0 || multishineSeq == 8) {
+        tempBtn.B = 1;
+        // tempBtn.Ay = 0; // this seems to be up?
+        // tempBtn.Ay = 255; // this seems to be up?
+      } else if (multishineSeq == 3) {
+        tempBtn.Y = 1;
+      } else {
+        tempBtn.B = 0;
+        tempBtn.Y = 0;
+      }
+
+      copyButtons(tempBtn, _btn);
+
+      multishineSeq++;
+      if (multishineSeq > 12) {
+        multishineSeq = 3;
+      }
+
+      continue;
+    }
     // check to see if we are calibrating
-    if (_currentCalStep >= 0) {
+    else if (_currentCalStep >= 0) {
       // Respond to inputs
       // Display and notch adjust stuff that needs to be updated every loop
       if (whichStick == ASTICK) {
@@ -832,7 +898,8 @@ void second_core() {
     processButtons(_pinList, _btn, _hardware, _controls, _gains, _normGains,
                    _currentCalStep, running, tempCalPointsX, tempCalPointsY,
                    whichStick, notchStatus, notchAngles, measuredNotchAngles,
-                   _aStickParams, _cStickParams);
+                   _aStickParams, _cStickParams, &multishine, &multishineSeq,
+                   &multishineTimer);
   }
 }
 
