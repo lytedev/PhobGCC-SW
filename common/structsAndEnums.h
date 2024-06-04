@@ -259,8 +259,8 @@ struct StickParams {
   // these are the notch remap parameters
   float affineCoeffs[16][4]; // affine transformation coefficients for all
                              // regions of the stick
-  float boundaryAngles[16]; // angles at the boundaries between regions of the
-                            // stick (in the plane)
+  float boundaryAngles[16];  // angles at the boundaries between regions of the
+                             // stick (in the plane)
 };
 
 enum CaptureMode {
@@ -268,8 +268,8 @@ enum CaptureMode {
   CM_REACTION,    // record immediately
   CM_STICK_RISE2, // starting when a stick coord exceeds a threshold distance
                   // from center; 100 pt 2-axis
-  CM_STICK_RISE, // starting when a stick coord exceeds a threshold distance
-                 // from center
+  CM_STICK_RISE,  // starting when a stick coord exceeds a threshold distance
+                  // from center
   CM_STICK_FALL,  // starting when a stick coord falls below a threshold
   CM_STICK_PIVOT, // starting when a stick coord falls below a threshold
   CM_TRIG,        // increasing threshold on triggers
@@ -307,7 +307,7 @@ struct DataCapture {
   uint8_t endIndex;
   uint8_t viewIndex; // for stepping through manually and looking at coordinates
                      // and button presses
-  uint8_t a1[100]; // 6 frames for analog
+  uint8_t a1[100];   // 6 frames for analog
   uint8_t a2[100];
   uint8_t a1Unfilt[100];
   uint8_t a2Unfilt[100];
