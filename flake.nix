@@ -40,5 +40,24 @@
       phob-gcc-sw-rp2040 = pkgs.callPackage ./package.nix {};
       default = self.outputs.packages.${system}.phob-gcc-sw-rp2040;
     });
+
+    devShells = forEachSupportedSystem (system: let
+      pkgs = nixpkgsFor system;
+    in {
+      phob-gcc-sw-rp2040 = self.outputs.packages.${system}.phob-gcc-sw-rp2040.overrideAttrs (final: {
+        buildInputs ? [],
+        PICO_SDK_PATH,
+        ...
+      }: {
+        CPATH = "${PICO_SDK_PATH}";
+        buildInputs = with pkgs;
+          [
+            clang
+            cmake-language-server
+          ]
+          ++ buildInputs;
+      });
+      default = self.outputs.devShells.${system}.phob-gcc-sw-rp2040;
+    });
   };
 }

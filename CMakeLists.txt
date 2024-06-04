@@ -44,6 +44,11 @@ target_compile_definitions(phobgcc_rp2040
 	#PICO_FLASH_SPI_CLKDIV=8
 	)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+endif()
+
 target_link_libraries(phobgcc_rp2040
 	PRIVATE
 	pico_stdlib

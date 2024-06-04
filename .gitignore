@@ -31,3 +31,27 @@ fp-info-cache
 
 # nix build results
 /result
+
+# CMake artifacts
+/CMakeCache.txt
+/CMakeFiles
+
+# clangd cache
+/.cache
+
+# cmake output
+/.cmake
+/Makefile
+/cmake_install.cmake
+/compile_commands.json
+/*.h
+/elf2uf2
+/generated
+/joybus.pio.h
+
+# submodules
+/pico-sdk
+/pioasm
+
+# build artifacts
+/phobgcc_rp2040.*
