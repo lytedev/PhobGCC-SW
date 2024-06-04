@@ -8,8 +8,8 @@ pico_sdk_init()
 
 include_directories(
 	include
-	../common
-	../extras
+	common
+	extras
 	)
 
 add_executable(phobgcc_rp2040
