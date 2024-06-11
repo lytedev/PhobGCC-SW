@@ -21,12 +21,17 @@ See the [latest release](./releases).
 
 To build this PhobGCC firmware for the RP2040:
 
-1. [Install `nix`][install-nix] (or use a `nix` Docker container)
-2. Clone this repo, `cd` into it, run `nix build`
-3. [Flash your controller with the resulting `./result/phobgcc_rp2040.uf2`
-   file][flash]
+- [Install `nix`][install-nix] (or use a `nix` Docker container)
+- Clone this repo, `cd` into it, run `nix build`
 
-If you're running Linux this can be done by running the following:
+Your `./result/phobgcc_rp2040.uf2` should now be there.
+
+## Flashing
+
+Flashing intructions are here: https://github.com/PhobGCC/PhobGCC-doc/blob/main/For_Users/Phob2_Programming_Guide.md
+
+If you're running Linux this can be done by running the following after plugging
+the PhobGCC in while holding reset/start:
 
 ```shell
 sudo mkdir -p /mnt
