@@ -15,7 +15,7 @@ it pertains to competitive games and Super Smash Bros. Melee.
 
 ## Download
 
-See the [latest release][./releases].
+See the [latest release](./releases).
 
 ## Build
 
