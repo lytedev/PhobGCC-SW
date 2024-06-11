@@ -1,13 +1,32 @@
-To build PhobGCC for the RP2040:
+# Falco Multishine PhobGCC Firmware
 
-1. Install the compiler toolchain as per the [Pico documentation](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf).
-2. Git clone the `pico-sdk` repository from https://github.com/raspberrypi/pico-sdk
-3. Check out the master branch.
-4. Run `git submodule update --init` (omit `--init` if you're not doing it for the first time)
-5. Export the `pico-sdk` directory as an environment variable `export PICO_SDK_PATH=[directory containing]/pico-sdk`
-6. Clone the PhobGCC-SW repository.
-7. Uncomment the appropriate `#include` line for your board in `../common/phobGCC.h`.
-8. `cd` into the `PhobGCC/rp2040` subdirectory inside the `PhobGCC-SW` folder.
-9. `mkdir build && cd build`
-10. `cmake ..`
-11. `make`?
+To build this PhobGCC firmware for the RP2040:
+
+1. [Install `nix`][install-nix] (or use a `nix` Docker container)
+2. Clone this repo, `cd` into it, run `nix build`
+3. [Flash your controller with the resulting `./result/phobgcc_rp2040.uf2` file]
+  0. Unplug your controller from everything
+  1. While holding the reset button on the PCB or start button, plug in the USB
+     port on the PCB to your controller
+  2. Copy the file into the drive that shows up on your computer (which should
+     be called something like `RPI-RP2`)
+
+If you're running Linux this can be done by running the following:
+
+```shell
+sudo mkdir -p /mnt
+sudo mount /dev/disk/by-label/RPI-RP2 /mnt
+sudo cp ./phobgcc_rp2040.uf2 /mnt
+sudo sync
+sudo umount /mnt do
+```
+
+# Usage
+
+It's a normal Phob except you can press Right on the D-Pad to multishine as
+Falco.
+
+Don't do this in ranked matches or in tournaments. <3
+
+[install-nix]: https://zero-to-nix.com/start/install
+
